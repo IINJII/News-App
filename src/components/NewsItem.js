@@ -1,8 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react'
 
-export default class NewsItem extends Component {
-  render() {
-    let { title, description, imageUrl, newsUrl, source, author, date } = this.props;    // This is how we use props in class based compoenents.    // Here, the newsUrl will uniqely identify the particular news because for every new it will be unique
+const NewsItem = (props) => {
+    let { title, description, imageUrl, newsUrl, source, author, date } = props;    // This is how we use props in class based compoenents.    // Here, the newsUrl will uniqely identify the particular news because for every new it will be unique    // This is called destructuring in javascript. Hence, the value of this.props.title is given to variable title and we can use title directly without using this.props.title
     return (
       <div>
         <div className="card my-2">
@@ -25,5 +24,6 @@ export default class NewsItem extends Component {
         </div>
       </div>
     )
-  }
 }
+
+export default NewsItem
