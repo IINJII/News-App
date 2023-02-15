@@ -6,10 +6,15 @@ export default class NewsItem extends Component {
     return (
       <div>
         <div className="card my-2">
-          <span className="position-absolute top-0 translate-middle badge rounded-pill bg-danger z-1" style={{left: "85%"}}>
-            {source}
-            <span className="visually-hidden">unread messages</span>
-          </span>
+          <div>
+            <span className="badge rounded-pill bg-danger z-1" style={{
+              position: "absolute",
+              right: "0px"
+            }}>
+              {source}
+              <span className="visually-hidden">unread messages</span>
+            </span>
+          </div>
           <img src={imageUrl} className="card-img-top" alt="..." />
           <div className="card-body">
             <h5 className="card-title">{title}....</h5>

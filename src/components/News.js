@@ -3,7 +3,7 @@ import NewsItem from './NewsItem'
 import Spinner from './Spinner';
 import PropTypes from 'prop-types';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import LoadingBar from 'react-top-loading-bar'
+
 
 export default class News extends Component {
   static defaultProps = {    // This is how we set default proptypes in classbased components
@@ -25,7 +25,6 @@ export default class News extends Component {
       loading: true,
       page: 1,
       totalResults: 0,
-      progress: 0
     }
     document.title = `${this.capitalize(this.props.category)} - NewsMonkey`
   }
@@ -38,18 +37,19 @@ export default class News extends Component {
 
   // This is the new function that will be called inside each function so tat we can keep the code concise
   updateNews = async () => {
-    this.setState({progress: this.state.progress + 10})
-    this.setState({progress: this.state.progress + 20})
-    let url = `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=45198191bad04c7990c6d96643ac2ab6&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    this.props.setProgress(10);
+    let url = `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=${this.props.apikey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true })
     let data = await fetch(url);
+    this.props.setProgress(30);
     let parsedData = await data.json();
+    this.props.setProgress(70);
     this.setState({
       articles: parsedData.articles,
       loading: false,
       totalResults: parsedData.totalResults,
-      progress: this.state.progress + 100
     })    // Here, we have used setState() method to change the articles key of the state.
+    this.props.setProgress(100);
   }
 
 
@@ -105,14 +105,14 @@ export default class News extends Component {
 
   // Function defined by the InfiniteScroll
   fetchMoreData = async () => {
-    this.setState({page: this.state.page + 1})
+    this.setState({ page: this.state.page + 1 })
     // Here, inside the url we have made the page=${this.state.page + 1} instead of making it just page=${this.state.page}. If we have not done this then it would have given us an unique key error and some news would be seen twice. So to fix this we have done this.
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=45198191bad04c7990c6d96643ac2ab6&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apikey}&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
     let data = await fetch(url);
     let parsedData = await data.json()
     this.setState({
-        articles: this.state.articles.concat(parsedData.articles),
-        totalResults: parsedData.totalResults
+      articles: this.state.articles.concat(parsedData.articles),
+      totalResults: parsedData.totalResults
     })
   };
 
@@ -122,29 +122,24 @@ export default class News extends Component {
     // col-md-4 means that there will be 3 columns as 3x4 = 12.
     return (
       <>
-       <LoadingBar
-        color='#f11946'
-        progress={this.state.progress}
-        onLoaderFinished={() => this.setState({progress: 0})}
-      />
-        <h2 className="text-center">NewsMonkey - Top {this.capitalize(this.props.category)} Headlines  &#40; {this.state.totalResults} results &#41;</h2>
+        <h2 className="text-center my-4">NewsMonkey - Top {this.capitalize(this.props.category)} Headlines  &#40; {this.state.totalResults} results &#41;</h2>
         {/* {this.state.loading && <Spinner />} */}
 
         <InfiniteScroll
           dataLength={this.state.articles.length}
           next={this.fetchMoreData}
           hasMore={this.state.articles.length !== this.state.totalResults}
-          loader={<Spinner/>}
+          loader={<Spinner />}
         >
           <div className="container">
             <div className='row'>
-            {!this.state.loading && this.state.articles.map((element) => {
-              return <div key={element.url} className="col-md-4">
-                <NewsItem source={element.source.name} author={element.author} date={element.publishedAt} title={element.title.substring(0, 45)} description={element.description ? element.description.substring(0, 88) : ""} imageUrl={element.urlToImage ? element.urlToImage : "https://thumbs.dreamstime.com/b/news-newspapers-folded-stacked-word-wooden-block-puzzle-dice-concept-newspaper-media-press-release-42301371.jpg"} newsUrl={element.url} />
-              </div>
-            })}
+              {!this.state.loading && this.state.articles.map((element) => {
+                return <div key={element.url} className="col-md-4">
+                  <NewsItem source={element.source.name} author={element.author} date={element.publishedAt} title={element.title.substring(0, 45)} description={element.description ? element.description.substring(0, 88) : ""} imageUrl={element.urlToImage ? element.urlToImage : "https://thumbs.dreamstime.com/b/news-newspapers-folded-stacked-word-wooden-block-puzzle-dice-concept-newspaper-media-press-release-42301371.jpg"} newsUrl={element.url} />
+                </div>
+              })}
+            </div>
           </div>
-        </div>
 
         </InfiniteScroll>
 
